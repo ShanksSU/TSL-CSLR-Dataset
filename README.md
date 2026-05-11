@@ -1,0 +1,189 @@
+# Taiwan Sign Language CSLR Dataset
+
+## Introduction
+
+TSL (Taiwan Sign Language) is a continuous sign language recognition dataset collected for research purposes. It contains video recordings of 10 Taiwanese Sign Language sentences performed by 5 signers, with sentence-level annotations for training continuous sign language recognition models.
+
+The dataset follows the [Phoenix2014](https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX/) pipeline convention and is compatible with CTC-based continuous sign language recognition frameworks.
+
+---
+
+## Sentence Classes
+
+| Sentence | Total | Train | Dev | Test |
+|----------|------:|------:|----:|-----:|
+| He has a job | 175 | 105 | 35 | 35 |
+| He knows me | 176 | 106 | 35 | 35 |
+| I can help you | 175 | 105 | 35 | 35 |
+| I can't hear | 175 | 105 | 35 | 35 |
+| I don't have a job | 175 | 105 | 35 | 35 |
+| No smoking here | 175 | 105 | 35 | 35 |
+| Please sign here | 174 | 104 | 35 | 35 |
+| Thank you for helping me | 174 | 104 | 35 | 35 |
+| What's your name | 174 | 104 | 35 | 35 |
+| Where is your home | 173 | 104 | 35 | 34 |
+
+---
+
+## Split Summary
+
+| Split | Samples | Ratio |
+|-------|--------:|------:|
+| Train | 1047 | 59.97% |
+| Dev   | 350  | 20.05% |
+| Test  | 349  | 19.99% |
+| **Total** | **1746** | |
+
+Splits are stratified by sentence class with `SEED=0` to ensure reproducibility.
+
+---
+
+## Directory Structure
+
+```
+Dataset/TSL/
+├── origin video/
+│   ├── He has a job/
+│   │   ├── Alex_He_has_a_job_001.mp4
+│   │   └── ...
+│   └── .../
+├── annotations/
+│   └── manual/
+│       ├── total.corpus.csv
+│       ├── train.corpus.csv
+│       ├── dev.corpus.csv
+│       └── test.corpus.csv
+├── features/
+│   └── fullFrame-640x480px/
+│       ├── total/
+│       ├── train/
+│       ├── dev/
+│       └── test/
+└── preprocess/
+    ├── 1_build_total_corpus.py
+    ├── 2_extract_total_frames.py
+    ├── 3_split_total_corpus.py
+    ├── dataset_preprocess-TSL.py
+    └── TSL/
+        ├── TSL-groundtruth-train.stm
+        ├── TSL-groundtruth-dev.stm
+        ├── TSL-groundtruth-test.stm
+        ├── train_info.npy
+        ├── dev_info.npy
+        ├── test_info.npy
+        └── gloss_dict.npy
+```
+
+---
+
+## Preprocessing Pipeline
+
+### Dependencies
+
+```bash
+pip install opencv-python pandas numpy tqdm
+```
+
+### Step 1 — Build total corpus
+
+Scans all `.mp4` files under `origin video/` and generates `total.corpus.csv`.
+
+```bash
+python 1_build_total_corpus.py
+```
+
+### Step 2 — Extract frames
+
+Extracts frames from each video into `features/fullFrame-640x480px/total/`.
+
+```bash
+python 2_extract_total_frames.py
+```
+
+Set `OVERWRITE = True` in the script to force re-extraction of existing frames.
+
+### Step 3 — Split corpus and copy frames
+
+Performs stratified split by sentence class and copies frames into `train/dev/test/` directories. Generates Phoenix-style `.corpus.csv` for each split.
+
+```bash
+python 3_split_total_corpus.py
+```
+
+The script will interactively ask whether to copy or skip frames for each split. If skipping, a consistency check is automatically run to verify that corpus entries match the frame directories.
+
+### Step 4 — Generate info and gloss dictionary
+
+Generates `*_info.npy` and `gloss_dict.npy` used by the training framework. Optionally resizes frames from 640×480 to 256×256.
+
+```bash
+python dataset_preprocess-TSL.py --process-image --multiprocessing
+```
+
+---
+
+## Annotation Format
+
+### `*.corpus.csv`
+
+Phoenix-style pipe-delimited single-column CSV:
+
+```
+id|folder|signer|annotation
+Alex_He_has_a_job_001|Alex_He_has_a_job_001/1/*.png|Alex|他 有 工作
+```
+
+### `total.corpus.csv`
+
+Extended format with full metadata:
+
+```
+id|folder|signer|sentence|zh_sentence|zh_gloss
+Alex_He_has_a_job_001|Alex_He_has_a_job_001/1/*.png|Alex|He has a job|他有工作|他 有 工作
+```
+
+### `gloss_dict.npy`
+
+Python dict mapping each gloss token to `[index, frequency]`:
+
+```python
+gloss_dict = np.load("TSL/gloss_dict.npy", allow_pickle=True).item()
+# e.g. {"他": [1, 350], "有": [2, 175], ...}
+```
+
+---
+
+## Ground Truth STM
+
+Each split generates a NIST SCLITE-compatible `.stm` file for evaluation:
+
+```
+TSL/TSL-groundtruth-train.stm
+TSL/TSL-groundtruth-dev.stm
+TSL/TSL-groundtruth-test.stm
+```
+
+Format per line:
+```
+<fileid> 1 <signer> 0.0 1.79769e+308 <gloss sequence>
+```
+---
+
+## Citation
+
+The raw video data was obtained from the authors of the following paper. The original dataset contains only videos and their corresponding English sentences. This repository extends it with gloss annotations, train/dev/test splits, and frame extraction.
+
+**If you wish to access the dataset, please contact the original author Huang, Wei-Hao or the maintainer of this repository.**
+
+**If you use this dataset in your work, you must cite the following paper.**
+
+```bibtex
+@InProceedings{huang2025ARIS,
+  author    = {Huang, Wei-Hao and Zhao, Qiangfu},
+  title     = {Taiwan Sign Language Recognition Based on MediaPipe and Deep Learning},
+  booktitle = {2025 International Conference on Advanced Robotics and Intelligent Systems (ARIS)},
+  year      = {2025},
+  pages     = {1-6},
+  doi       = {10.1109/ARIS66143.2025.11163460}
+}
+```
