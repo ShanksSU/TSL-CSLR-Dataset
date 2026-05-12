@@ -28,15 +28,15 @@ SENTENCE_MAP = {
 GLOSS_MAP = {
     "He has a job": {
         "zh_sentence": "他有工作",
-        "zh_gloss": "他 有 工作",
+        "zh_gloss": "他 工作 有",
     },
     "He knows me": {
         "zh_sentence": "他認識我",
-        "zh_gloss": "他 認識 我",
+        "zh_gloss": "他 我 認識",
     },
     "I can help you": {
         "zh_sentence": "我可以幫助你",
-        "zh_gloss": "我 幫助 你 可以",
+        "zh_gloss": "我 幫忙 可以",
     },
     "I can't hear": {
         "zh_sentence": "我聽不到",
@@ -48,15 +48,15 @@ GLOSS_MAP = {
     },
     "No smoking here": {
         "zh_sentence": "這裡禁止吸菸",
-        "zh_gloss": "這裡 抽菸 不可以",
+        "zh_gloss": "這 抽菸 不可以",
     },
     "Please sign here": {
         "zh_sentence": "請在這裡簽名",
-        "zh_gloss": "請 這裡 簽名",
+        "zh_gloss": "請 這 簽名",
     },
     "Thank you for helping me": {
         "zh_sentence": "謝謝你幫助我",
-        "zh_gloss": "謝謝 你 幫助",
+        "zh_gloss": "謝謝 你 幫忙",
     },
     "What's your name": {
         "zh_sentence": "你叫什麼名字",
