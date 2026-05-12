@@ -1,0 +1,4 @@
+dataset_root: ./dataset/TSL
+dict_path: ./preprocess/TSL/gloss_dict.npy
+evaluation_dir: ./evaluation/slr_eval
+evaluation_prefix: TSL-groundtruth
