@@ -10,18 +10,18 @@ The dataset follows the [Phoenix2014](https://www-i6.informatik.rwth-aachen.de/~
 
 ## Sentence Classes
 
-| Sentence | Total | Train | Dev | Test |
-|----------|------:|------:|----:|-----:|
-| He has a job | 175 | 105 | 35 | 35 |
-| He knows me | 176 | 106 | 35 | 35 |
-| I can help you | 175 | 105 | 35 | 35 |
-| I can't hear | 175 | 105 | 35 | 35 |
-| I don't have a job | 175 | 105 | 35 | 35 |
-| No smoking here | 175 | 105 | 35 | 35 |
-| Please sign here | 174 | 104 | 35 | 35 |
-| Thank you for helping me | 174 | 104 | 35 | 35 |
-| What's your name | 174 | 104 | 35 | 35 |
-| Where is your home | 173 | 104 | 35 | 34 |
+| Sentence | Chinese | TSL Gloss | Total | Train | Dev | Test |
+|----------|---------|-----------|------:|------:|----:|-----:|
+| He has a job | 他有工作。 | 他 工作 有 | 175 | 105 | 35 | 35 |
+| He knows me | 他認識我。 | 他 我 認識 | 176 | 106 | 35 | 35 |
+| I can help you | 我可以幫你。 | 我 幫忙 可以 | 175 | 105 | 35 | 35 |
+| I can't hear | 我聽不見。 | 我 聽不見 | 175 | 105 | 35 | 35 |
+| I don't have a job | 我沒有工作。 | 我 工作 沒有 | 175 | 105 | 35 | 35 |
+| No smoking here | 這裡禁止吸菸。 | 這 抽煙 不可以 | 175 | 105 | 35 | 35 |
+| Please sign here | 請在這裡簽名。 | 請 這 簽名 | 174 | 104 | 35 | 35 |
+| Thank you for helping me | 謝謝你幫助我。 | 謝謝 你 幫忙 | 174 | 104 | 35 | 35 |
+| What's your name | 你叫什麼名字？ | 你 名字 什麼 | 174 | 104 | 35 | 35 |
+| Where is your home | 你家在哪裡？ | 你 家 什麼 哪裡 | 173 | 104 | 35 | 34 |
 
 ---
 
