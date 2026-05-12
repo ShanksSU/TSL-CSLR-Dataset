@@ -1,10 +1,23 @@
-# Taiwan Sign Language CSLR Dataset
+# TSL Dataset
 
 ## Introduction
 
-TSL (Taiwan Sign Language) is a continuous sign language recognition dataset collected for research purposes. It contains video recordings of 10 Taiwanese Sign Language sentences performed by 5 signers, with sentence-level annotations for training continuous sign language recognition models.
+TSL (Taiwan Sign Language) is a continuous sign language recognition dataset collected for research purposes. It contains video recordings of 10 common Taiwanese Sign Language sentences performed by 5 signers, with sentence-level annotations for training continuous sign language recognition models.
 
 The dataset follows the [Phoenix2014](https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX/) pipeline convention and is compatible with CTC-based continuous sign language recognition frameworks.
+
+---
+
+## Signers
+
+| Signer | Samples |
+|--------|---------|
+| Leo    | 351     |
+| Alex   | 350     |
+| Auther | 350     |
+| Jerry  | 349     |
+| David  | 346     |
+| **Total** | **1746** |
 
 ---
 
@@ -38,51 +51,57 @@ Splits are stratified by sentence class with `SEED=0` to ensure reproducibility.
 
 ---
 
-## Directory Structure
+## Environment Setup
 
+### Docker (Recommended)
+
+Build the image:
+
+```bash
+docker build -t <image_name> .
 ```
-Dataset/TSL/
-├── origin video/
-│   ├── He has a job/
-│   │   ├── Alex_He_has_a_job_001.mp4
-│   │   └── ...
-│   └── .../
-├── annotations/
-│   └── manual/
-│       ├── total.corpus.csv
-│       ├── train.corpus.csv
-│       ├── dev.corpus.csv
-│       └── test.corpus.csv
-├── features/
-│   └── fullFrame-640x480px/
-│       ├── total/
-│       ├── train/
-│       ├── dev/
-│       └── test/
-└── preprocess/
-    ├── 1_build_total_corpus.py
-    ├── 2_extract_total_frames.py
-    ├── 3_split_total_corpus.py
-    ├── dataset_preprocess-TSL.py
-    └── TSL/
-        ├── TSL-groundtruth-train.stm
-        ├── TSL-groundtruth-dev.stm
-        ├── TSL-groundtruth-test.stm
-        ├── train_info.npy
-        ├── dev_info.npy
-        ├── test_info.npy
-        └── gloss_dict.npy
+
+Run the container:
+
+```bash
+docker run -d --gpus all -p 8025:22 --shm-size=16g \
+  -v "C:\Users\<username>\Downloads\Dataset:/root/workspace/Dataset" \
+  --name <container_name> <image_name>
 ```
+
+The container runs an SSH server on port 8025. Default root password is `123456`.
+
+Environment inside container:
+- CUDA 12.8.1 + cuDNN
+- Python 3.10 (conda env `torch_222`)
+- PyTorch 2.2.2 + torchvision 0.17.2 (cu121)
+
+### Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Key dependencies:
+- `torch==2.2.2`
+- `opencv-python`
+- `numpy`
+- `einops`
+- `tqdm`
+
+### Evaluation Tool (Optional)
+
+[sclite](https://github.com/kaldi-asr/kaldi) provides detailed WER statistics. After installing Kaldi, create a soft link:
+
+```bash
+ln -s PATH_TO_KALDI/tools/sctk-20159b5/bin/sclite ./software/sclite
+```
+
+A Python-based WER evaluation tool is also provided under `evaluation/slr_eval/` for convenience.
 
 ---
 
 ## Preprocessing Pipeline
-
-### Dependencies
-
-```bash
-pip install opencv-python pandas numpy tqdm
-```
 
 ### Step 1 — Build total corpus
 
@@ -153,6 +172,22 @@ gloss_dict = np.load("TSL/gloss_dict.npy", allow_pickle=True).item()
 
 ---
 
+## Training
+
+```bash
+python main.py --work-dir PATH_TO_SAVE_RESULTS --config configs/baseline.yaml --device 0
+```
+
+Configuration priority: command line > config file > argparse defaults.
+
+## Inference
+
+```bash
+python main.py --config ./configs/baseline.yaml --device 0 --load-weights path_to_weight.pt --phase test
+```
+
+---
+
 ## Ground Truth STM
 
 Each split generates a NIST SCLITE-compatible `.stm` file for evaluation:
@@ -167,6 +202,7 @@ Format per line:
 ```
 <fileid> 1 <signer> 0.0 1.79769e+308 <gloss sequence>
 ```
+
 ---
 
 ## Citation
@@ -178,12 +214,38 @@ The raw video data was obtained from the authors of the following paper. The ori
 **If you use this dataset in your work, you must cite the following paper.**
 
 ```bibtex
-@InProceedings{huang2025ARIS,
-  author    = {Huang, Wei-Hao and Zhao, Qiangfu},
-  title     = {Taiwan Sign Language Recognition Based on MediaPipe and Deep Learning},
-  booktitle = {2025 International Conference on Advanced Robotics and Intelligent Systems (ARIS)},
-  year      = {2025},
-  pages     = {1-6},
-  doi       = {10.1109/ARIS66143.2025.11163460}
+@InProceedings{huang2025tsl,
+    author    = {Huang, Wei-Hao and Zhao, Qiangfu},
+    title     = {Taiwan Sign Language Recognition Based on MediaPipe and Deep Learning},
+    booktitle = {2025 International Conference on Advanced Robotics and Intelligent Systems (ARIS)},
+    year      = {2025},
+    pages     = {1--6},
+    doi       = {10.1109/ARIS66143.2025.11163460}
+}
+```
+
+---
+
+## Acknowledgement
+
+The baseline model is based on [VAC (ICCV 2021)](https://openaccess.thecvf.com/content/ICCV2021/html/Min_Visual_Alignment_Constraint_for_Continuous_Sign_Language_Recognition_ICCV_2021_paper.html). The raw video dataset was provided by Huang, Wei-Hao. Many thanks for their great work!
+
+```bibtex
+@InProceedings{Min_2021_ICCV,
+    author    = {Min, Yuecong and Hao, Aiming and Chai, Xiujuan and Chen, Xilin},
+    title     = {Visual Alignment Constraint for Continuous Sign Language Recognition},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2021},
+    pages     = {11542-11551}
+}
+
+@InProceedings{huang2025tsl,
+    author    = {Huang, Wei-Hao and Zhao, Qiangfu},
+    title     = {Taiwan Sign Language Recognition Based on MediaPipe and Deep Learning},
+    booktitle = {2025 International Conference on Advanced Robotics and Intelligent Systems (ARIS)},
+    year      = {2025},
+    pages     = {1--6},
+    doi       = {10.1109/ARIS66143.2025.11163460}
 }
 ```
